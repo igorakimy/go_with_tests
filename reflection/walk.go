@@ -4,6 +4,16 @@ import (
 	"reflect"
 )
 
+type Person struct {
+	Name    string
+	Profile Profile
+}
+
+type Profile struct {
+	Age  int
+	City string
+}
+
 func Walk(x interface{}, fn func(string)) {
 	val := reflect.ValueOf(x)
 
@@ -12,6 +22,10 @@ func Walk(x interface{}, fn func(string)) {
 
 		if field.Kind() == reflect.String {
 			fn(field.String())
+		}
+
+		if field.Kind() == reflect.Struct {
+			Walk(field.Interface(), fn)
 		}
 	}
 }
