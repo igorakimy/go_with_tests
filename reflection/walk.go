@@ -29,6 +29,10 @@ func Walk(x any, fn func(string)) {
 	case reflect.Slice, reflect.Array:
 		numberOfValues = val.Len()
 		getField = val.Index
+	case reflect.Map:
+		for _, key := range val.MapKeys() {
+			Walk(val.MapIndex(key).Interface(), fn)
+		}
 	}
 
 	for i := 0; i < numberOfValues; i++ {
