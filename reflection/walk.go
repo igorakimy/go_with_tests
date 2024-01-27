@@ -26,7 +26,7 @@ func Walk(x any, fn func(string)) {
 	case reflect.Struct:
 		numberOfValues = val.NumField()
 		getField = val.Field
-	case reflect.Slice:
+	case reflect.Slice, reflect.Array:
 		numberOfValues = val.Len()
 		getField = val.Index
 	}
