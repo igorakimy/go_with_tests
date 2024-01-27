@@ -14,12 +14,8 @@ type Profile struct {
 	City string
 }
 
-func Walk(x interface{}, fn func(string)) {
-	val := reflect.ValueOf(x)
-
-	if val.Kind() == reflect.Pointer {
-		val = val.Elem()
-	}
+func Walk(x any, fn func(string)) {
+	val := getValue(x)
 
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)
@@ -31,4 +27,14 @@ func Walk(x interface{}, fn func(string)) {
 			Walk(field.Interface(), fn)
 		}
 	}
+}
+
+func getValue(x any) reflect.Value {
+	val := reflect.ValueOf(x)
+
+	if val.Kind() == reflect.Pointer {
+		val = val.Elem()
+	}
+
+	return val
 }
