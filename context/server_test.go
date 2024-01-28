@@ -2,6 +2,7 @@ package context
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -13,20 +14,6 @@ type SpyStore struct {
 	response string
 	t        *testing.T
 }
-
-//func (s *SpyStore) assertWasCancelled() {
-//	s.t.Helper()
-//	if !s.cancelled {
-//		s.t.Error("store was not told to cancel")
-//	}
-//}
-//
-//func (s *SpyStore) assertWasNotCancelled() {
-//	s.t.Helper()
-//	if s.cancelled {
-//		s.t.Error("store was told to cancel")
-//	}
-//}
 
 func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
 	data := make(chan string, 1)
@@ -52,6 +39,24 @@ func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
 	case res := <-data:
 		return res, nil
 	}
+}
+
+type SpyResponseWriter struct {
+	written bool
+}
+
+func (s *SpyResponseWriter) Header() http.Header {
+	s.written = true
+	return nil
+}
+
+func (s *SpyResponseWriter) Write([]byte) (int, error) {
+	s.written = true
+	return 0, errors.New("not implemented")
+}
+
+func (s *SpyResponseWriter) WriteHeader(statusCode int) {
+	s.written = true
 }
 
 func TestServer(t *testing.T) {
@@ -82,8 +87,12 @@ func TestServer(t *testing.T) {
 		time.AfterFunc(5*time.Millisecond, cancel)
 		request = request.WithContext(cancellingCtx)
 
-		response := httptest.NewRecorder()
+		response := &SpyResponseWriter{}
 
 		svr.ServeHTTP(response, request)
+
+		if response.written {
+			t.Error("a response should not have been written")
+		}
 	})
 }
