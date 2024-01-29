@@ -1,6 +1,8 @@
 package property_based_tests
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestRomanNumerals(t *testing.T) {
 
