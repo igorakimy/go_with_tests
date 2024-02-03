@@ -10,9 +10,11 @@ import (
 func TestNewBlogPosts(t *testing.T) {
 	const (
 		firstBody = `Title: Post 1
-Description: Description 1`
+Description: Description 1
+Tags: tdd, go`
 		secondBody = `Title: Post 2
-Description: Description 2`
+Description: Description 2
+Tags: rust, borrow-checker`
 	)
 
 	fs := fstest.MapFS{
@@ -28,6 +30,7 @@ Description: Description 2`
 	assertPost(t, posts[0], reading_files.Post{
 		Title:       "Post 2",
 		Description: "Description 2",
+		Tags:        []string{"rust", "borrow-checker"},
 	})
 }
 
