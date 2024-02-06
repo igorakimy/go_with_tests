@@ -33,7 +33,7 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
-	_, _ = fmt.Fprint(w, score)
+	_, _ = fmt.Fprintln(w, score)
 }
 
 func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
