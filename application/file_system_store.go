@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 )
 
@@ -25,4 +26,17 @@ func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
 	}
 
 	return wins
+}
+
+func (f *FileSystemPlayerStore) RecordWin(name string) {
+	league := f.GetLeague()
+
+	for i, player := range league {
+		if name == player.Name {
+			league[i].Wins++
+		}
+	}
+
+	_, _ = f.database.Seek(0, 0)
+	_ = json.NewEncoder(f.database).Encode(&league)
 }
