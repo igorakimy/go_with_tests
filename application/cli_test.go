@@ -1,16 +1,30 @@
-package application
+package application_test
 
 import (
+	poker "github.com/igorakimy/go_with_tests/application"
 	"strings"
 	"testing"
 )
 
 func TestCLI(t *testing.T) {
-	in := strings.NewReader("Chris wins\n")
-	playerStore := &StubPlayerStore{}
 
-	cli := &CLI{playerStore, in}
-	cli.PlayPoker()
+	t.Run("record chris win from user input", func(t *testing.T) {
+		in := strings.NewReader("Chris wins\n")
+		playerStore := &poker.StubPlayerStore{}
 
-	assertPlayerWin(t, playerStore, "Chris")
+		cli := poker.NewCLI(playerStore, in)
+		cli.PlayPoker()
+
+		poker.AssertPlayerWin(t, playerStore, "Chris")
+	})
+
+	t.Run("record cleo win from user input", func(t *testing.T) {
+		in := strings.NewReader("Cleo wins\n")
+		playerStore := &poker.StubPlayerStore{}
+
+		cli := poker.NewCLI(playerStore, in)
+		cli.PlayPoker()
+
+		poker.AssertPlayerWin(t, playerStore, "Cleo")
+	})
 }
