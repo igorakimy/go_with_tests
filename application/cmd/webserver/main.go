@@ -4,21 +4,18 @@ import (
 	poker "github.com/igorakimy/go_with_tests/application"
 	"log"
 	"net/http"
-	"os"
 )
 
 const dbFileName = "game.db.json"
 
 func main() {
-	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
-	if err != nil {
-		log.Fatalf("problem opening: %s, %v", dbFileName, err)
-	}
 
-	store, err := poker.NewFileSystemPlayerStore(db)
+	store, closeFunc, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
+
 	if err != nil {
-		log.Fatalf("problem creating file system player store, %v", err)
+		log.Fatal(err)
 	}
+	defer closeFunc()
 
 	server := poker.NewPlayerServer(store)
 
