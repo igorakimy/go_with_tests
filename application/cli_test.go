@@ -54,6 +54,19 @@ func TestCLI(t *testing.T) {
 			t.Errorf("wanted Start called with 7 but got %d", game.StartedWith)
 		}
 	})
+
+	t.Run("print an error when a non numeric value is entered and does not start the game", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
+		in := strings.NewReader("Pies\n")
+		game := &GameSpy{}
+
+		cli := poker.NewCLI(in, stdout, game)
+		cli.PlayPoker()
+
+		if game.StartCalled {
+			t.Error("game should not have started")
+		}
+	})
 }
 
 func assertScheduledAlert(t testing.TB, got, want poker.ScheduledAlert) {
