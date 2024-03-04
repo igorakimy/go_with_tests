@@ -66,6 +66,13 @@ func TestCLI(t *testing.T) {
 		if game.StartCalled {
 			t.Error("game should not have started")
 		}
+
+		gotPrompt := stdout.String()
+		wantPrompt := poker.PlayerPrompt + "you're so silly"
+
+		if gotPrompt != wantPrompt {
+			t.Errorf("got %q, want %q", gotPrompt, wantPrompt)
+		}
 	})
 }
 
