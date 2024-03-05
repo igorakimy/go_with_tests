@@ -1,7 +1,7 @@
 package reading_files_test
 
 import (
-	"github.come/igorakimy/go_with_tests/reading_files"
+	"github.com/igorakimy/go_with_tests/reading_files"
 	"reflect"
 	"testing"
 	"testing/fstest"
