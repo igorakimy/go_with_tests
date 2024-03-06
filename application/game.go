@@ -18,6 +18,21 @@ type ScheduledAlert struct {
 	Amount int
 }
 
+type GameSpy struct {
+	StartedWith  int
+	FinishedWith string
+	StartCalled  bool
+}
+
+func (g *GameSpy) Start(numberOfPlayers int, alertsDestination io.Writer) {
+	g.StartCalled = true
+	g.StartedWith = numberOfPlayers
+}
+
+func (g *GameSpy) Finish(winner string) {
+	g.FinishedWith = winner
+}
+
 type Game interface {
 	Start(numberOfPlayers int, alertsDestination io.Writer)
 	Finish(winner string)
@@ -26,6 +41,13 @@ type Game interface {
 type TexasHoldem struct {
 	alerter BlindAlerter
 	store   PlayerStore
+}
+
+func NewTexasHoldem(alerter BlindAlerter, store PlayerStore) *TexasHoldem {
+	return &TexasHoldem{
+		alerter: alerter,
+		store:   store,
+	}
 }
 
 func NewGame(alerter BlindAlerter, store PlayerStore) *TexasHoldem {

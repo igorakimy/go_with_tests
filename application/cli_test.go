@@ -15,13 +15,12 @@ var dummyStdOut = &bytes.Buffer{}
 func TestCLI(t *testing.T) {
 
 	t.Run("start game with 3 players and finish game with 'Chris' as winner", func(t *testing.T) {
-		game := &GameSpy{}
+		game := &poker.GameSpy{}
+
 		stdout := &bytes.Buffer{}
-
 		in := userSends("3", "Chris wins")
-		cli := poker.NewCLI(in, stdout, game)
 
-		cli.PlayPoker()
+		poker.NewCLI(in, stdout, game).PlayPoker()
 
 		assertMessagesSentToUser(t, stdout, poker.PlayerPrompt)
 		assertGameStartedWith(t, game, 3)
@@ -29,7 +28,7 @@ func TestCLI(t *testing.T) {
 	})
 
 	t.Run("start game with 8 players and record 'Cleo' as winner", func(t *testing.T) {
-		game := &GameSpy{}
+		game := &poker.GameSpy{}
 
 		in := userSends("8", "Cleo")
 		cli := poker.NewCLI(in, dummyStdOut, game)
@@ -41,7 +40,7 @@ func TestCLI(t *testing.T) {
 	})
 
 	t.Run("prints an error when a non numeric value is entered and does not start the game", func(t *testing.T) {
-		game := &GameSpy{}
+		game := &poker.GameSpy{}
 
 		stdout := &bytes.Buffer{}
 		in := userSends("pies")
@@ -76,14 +75,14 @@ func assertMessagesSentToUser(t testing.TB, stdout *bytes.Buffer, messages ...st
 	}
 }
 
-func assertGameStartedWith(t testing.TB, game *GameSpy, numberOfPlayers int) {
+func assertGameStartedWith(t testing.TB, game *poker.GameSpy, numberOfPlayers int) {
 	t.Helper()
 	if game.StartedWith != numberOfPlayers {
 		t.Errorf("game started with %d number of players, but want %d", game.StartedWith, numberOfPlayers)
 	}
 }
 
-func assertFinishCalledWith(t testing.TB, game *GameSpy, playerName string) {
+func assertFinishCalledWith(t testing.TB, game *poker.GameSpy, playerName string) {
 	t.Helper()
 	finishedWith := strings.Replace(game.FinishedWith, " wins", "", -1)
 	if finishedWith != playerName {
@@ -91,7 +90,7 @@ func assertFinishCalledWith(t testing.TB, game *GameSpy, playerName string) {
 	}
 }
 
-func assertGameNotStarted(t testing.TB, game *GameSpy) {
+func assertGameNotStarted(t testing.TB, game *poker.GameSpy) {
 	t.Helper()
 	if game.StartCalled {
 		t.Error("the game started when it shouldn't")
