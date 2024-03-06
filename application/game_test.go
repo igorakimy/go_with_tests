@@ -3,6 +3,7 @@ package application_test
 import (
 	"fmt"
 	poker "github.com/igorakimy/go_with_tests/application"
+	"io"
 	"testing"
 	"time"
 )
@@ -13,7 +14,7 @@ type GameSpy struct {
 	StartCalled  bool
 }
 
-func (g *GameSpy) Start(numberOfPlayers int) {
+func (g *GameSpy) Start(numberOfPlayers int, alertsDestination io.Writer) {
 	g.StartCalled = true
 	g.StartedWith = numberOfPlayers
 }
@@ -27,7 +28,7 @@ func TestGame_Start(t *testing.T) {
 		blindAlerter := &poker.SpyBlindAlerter{}
 		game := poker.NewGame(blindAlerter, dummyPlayerStore)
 
-		game.Start(5)
+		game.Start(5, io.Discard)
 
 		cases := []poker.ScheduledAlert{
 			{0 * time.Second, 100},
@@ -50,7 +51,7 @@ func TestGame_Start(t *testing.T) {
 		blindAlerter := &poker.SpyBlindAlerter{}
 		game := poker.NewGame(blindAlerter, dummyPlayerStore)
 
-		game.Start(7)
+		game.Start(7, io.Discard)
 
 		cases := []poker.ScheduledAlert{
 			{At: 0 * time.Second, Amount: 100},
