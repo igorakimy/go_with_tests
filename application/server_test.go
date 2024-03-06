@@ -208,11 +208,15 @@ func assertGameStartedWith(t testing.TB, game *GameSpy, numberOfPlayers int) {
 	}
 }
 
-func assertFinishCalledWith(t testing.TB, game *GameSpy, playerName string) {
+func assertFinishCalledWith(t testing.TB, game *GameSpy, winner string) {
 	t.Helper()
-	finishedWith := strings.Replace(game.FinishedWith, " wins", "", -1)
-	if finishedWith != playerName {
-		t.Errorf("game finished with %s as winner, but want %s", finishedWith, playerName)
+
+	passed := retryUntil(500*time.Millisecond, func() bool {
+		return game.FinishedWith == winner
+	})
+
+	if !passed {
+		t.Errorf("expected finish called with %q, but got %q", winner, game.FinishedWith)
 	}
 }
 
@@ -263,4 +267,14 @@ func within(t testing.TB, d time.Duration, assert func()) {
 		t.Error("timed out")
 	case <-done:
 	}
+}
+
+func retryUntil(d time.Duration, f func() bool) bool {
+	deadline := time.Now().Add(d)
+	for time.Now().Before(deadline) {
+		if f() {
+			return true
+		}
+	}
+	return false
 }
