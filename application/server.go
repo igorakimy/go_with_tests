@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -42,6 +41,14 @@ func (w *playerServerWS) WaitForMsg() string {
 		log.Printf("error reading from websocket: %v\n", err)
 	}
 	return string(msg)
+}
+
+func (w *playerServerWS) Write(p []byte) (n int, err error) {
+	if err = w.WriteMessage(websocket.TextMessage, p); err != nil {
+		return
+	}
+
+	return len(p), nil
 }
 
 type Player struct {
@@ -111,7 +118,7 @@ func (p *PlayerServer) webSocketHandler(w http.ResponseWriter, r *http.Request) 
 
 	numberOfPlayersMsg := ws.WaitForMsg()
 	numberOfPlayers, _ := strconv.Atoi(numberOfPlayersMsg)
-	p.game.Start(numberOfPlayers, io.Discard)
+	p.game.Start(numberOfPlayers, ws)
 
 	winner := ws.WaitForMsg()
 	p.game.Finish(winner)

@@ -19,14 +19,18 @@ type ScheduledAlert struct {
 }
 
 type GameSpy struct {
-	StartedWith  int
-	FinishedWith string
-	StartCalled  bool
+	StartCalled bool
+	StartedWith int
+	BlindAlert  []byte
+
+	FinishedCalled bool
+	FinishedWith   string
 }
 
-func (g *GameSpy) Start(numberOfPlayers int, alertsDestination io.Writer) {
+func (g *GameSpy) Start(numberOfPlayers int, out io.Writer) {
 	g.StartCalled = true
 	g.StartedWith = numberOfPlayers
+	_, _ = out.Write(g.BlindAlert)
 }
 
 func (g *GameSpy) Finish(winner string) {
